@@ -13,10 +13,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import iskallia.vault.gear.attribute.VaultGearAttribute;
 import iskallia.vault.gear.attribute.VaultGearModifier;
 import iskallia.vault.gear.data.VaultGearData;
+import iskallia.vault.init.ModGearAttributes;
 import iskallia.vault.item.tool.JewelItem;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.util.ItemStackHelper;
@@ -62,6 +64,18 @@ public class MixinItemStackHelper
                 // Can it be optimized more? Yes. But I am lazy.
                 callbackInfoReturnable.setReturnValue(true);
                 callbackInfoReturnable.cancel();
+            }
+            else if (rightAttribute == null)
+            {
+                Optional<Integer> sizeA = dataA.getFirstValue(ModGearAttributes.JEWEL_SIZE);
+                Optional<Integer> sizeB = dataB.getFirstValue(ModGearAttributes.JEWEL_SIZE);
+
+                if (sizeA.isPresent() && sizeB.isPresent() && sizeB.get() < sizeA.get())
+                {
+                    // Arbitrary size matching... ugly but works
+                    callbackInfoReturnable.setReturnValue(true);
+                    callbackInfoReturnable.cancel();
+                }
             }
         }
     }
